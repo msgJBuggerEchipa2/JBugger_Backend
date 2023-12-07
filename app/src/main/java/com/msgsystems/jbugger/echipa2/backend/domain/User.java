@@ -8,7 +8,7 @@ public class User {
     @Id
     @Column(name="id_user")
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
+    private Long id;
 
     @Column(name="firstName")
     private String firstName;
@@ -39,6 +39,12 @@ public class User {
 
     }
     // Getters and Setters
+
+
+    public Long getId() {
+        return id;
+    }
+
     public String getFirstName(){
         return this.firstName;
     }
@@ -80,6 +86,9 @@ public class User {
     }
 
     public void setStatus(userStatus newStatus){ this.status = newStatus;}
+    public void deactivateUser() {
+        this.status = userStatus.INACTIVE;
+    }
 }
 
 enum userStatus{

@@ -9,10 +9,11 @@ import java.util.Optional;
 
 @RepositoryRestResource(collectionResourceRel = "users", path = "users")
 public interface UserRepository extends JpaRepository<User, Long> {
-    Optional<User> findById(long id);
+    Optional<User> findById(Long id);
 
     Optional<User> findByFirstName(String firstName);
 
     Optional<User> findByUsername(String username);
+
 
 }
