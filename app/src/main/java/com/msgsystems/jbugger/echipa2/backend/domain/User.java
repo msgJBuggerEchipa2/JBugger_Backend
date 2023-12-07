@@ -22,11 +22,12 @@ public class User {
     private String username = "";
     @Column(name="password")
     private String password;
+
     @Column(name="status")
     private userStatus status;
 
     public User(){
-
+        this.status = userStatus.ACTIVE;
     }
     public User(String _fName, String _lName, String _mobileNr, String _email){
 
@@ -34,10 +35,10 @@ public class User {
         this.lastName = _lName;
         this.mobileNumber = _mobileNr;
         this.email = _email;
-        this.status = userStatus.OFFLINE;
+        this.status = userStatus.ACTIVE;
 
     }
-
+    // Getters and Setters
     public String getFirstName(){
         return this.firstName;
     }
@@ -53,18 +54,35 @@ public class User {
     public String getPassword(){
         return this.password;
     }
-
     public String getUsername(){
         return this.username;
     }
 
+    public userStatus getStatus(){ return this.status;}
+
+    public void setFirstName(String newFirstName){
+        this.firstName = newFirstName;
+    }
+    public void setLastName(String newLastName){
+        this.lastName = newLastName;
+    }
+    public void setMobileNumber(String newMobileNumber){
+        this.mobileNumber = newMobileNumber;
+    }
+    public void setEmail(String newEmail){
+        this.email = newEmail;
+    }
+    public void setPassword(String newPassword){
+        this.password = newPassword;
+    }
     public void setUsername(String newUsername){
         this.username = newUsername;
     }
+
+    public void setStatus(userStatus newStatus){ this.status = newStatus;}
 }
 
 enum userStatus{
-    ONLINE,
-    OFFLINE,
-    AWAY
+    ACTIVE,
+    INACTIVE
 }
