@@ -2,6 +2,9 @@ package com.msgsystems.jbugger.echipa2.backend.domain;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
+
 @Entity
 @Table(name = "roles")
 public class Role {
@@ -13,6 +16,10 @@ public class Role {
     @Column(name = "type")
     private String type;
 
+
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private List<Permission> permissions;
+
     public Role() { }
     public Role(String type) {
         this.type = type;
@@ -21,4 +28,6 @@ public class Role {
     public String getType() {
         return type;
     }
+
+
 }
