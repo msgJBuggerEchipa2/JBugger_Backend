@@ -1,16 +1,14 @@
 package com.msgsystems.jbugger.echipa2.backend.controllers;
 
-import com.msgsystems.jbugger.echipa2.backend.domain.Permission;
 import com.msgsystems.jbugger.echipa2.backend.domain.User;
 import com.msgsystems.jbugger.echipa2.backend.repository.UserRepository;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,11 +19,9 @@ import java.util.regex.Pattern;
 @RestController
 @RequestMapping("/api")
 public class UserController {
-
     @Autowired
     UserRepository repository;
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
-
 
     public String generateUsername(User user){
         // Generate username for a given user.
@@ -268,8 +264,4 @@ public class UserController {
             e.printStackTrace();
         }
     }
-
-
-
-
 }

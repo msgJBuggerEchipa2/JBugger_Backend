@@ -1,6 +1,6 @@
 package com.msgsystems.jbugger.echipa2.backend.auth;
 
-import com.msgsystems.jbugger.echipa2.backend.repository.MockUserRepository;
+import com.msgsystems.jbugger.echipa2.backend.repository.UserRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,9 +13,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Configuration
 public class AuthConfig {
-    private final MockUserRepository userRepository;
+    private final UserRepository userRepository;
 
-    public AuthConfig(MockUserRepository userRepository) {
+    public AuthConfig(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 

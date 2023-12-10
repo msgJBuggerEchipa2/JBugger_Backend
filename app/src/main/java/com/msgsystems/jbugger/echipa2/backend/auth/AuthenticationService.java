@@ -1,7 +1,7 @@
 package com.msgsystems.jbugger.echipa2.backend.auth;
 
-import com.msgsystems.jbugger.echipa2.backend.model.MockUser;
-import com.msgsystems.jbugger.echipa2.backend.repository.MockUserRepository;
+import com.msgsystems.jbugger.echipa2.backend.domain.User;
+import com.msgsystems.jbugger.echipa2.backend.repository.UserRepository;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -9,14 +9,13 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class AuthenticationService {
-    private final MockUserRepository userRepository;
+    private final UserRepository userRepository;
 
     private final PasswordEncoder passwordEncoder;
-
     private final AuthenticationManager authenticationManager;
 
     public AuthenticationService(
-            MockUserRepository userRepository,
+            UserRepository userRepository,
             AuthenticationManager authenticationManager,
             PasswordEncoder passwordEncoder
     ) {
@@ -25,15 +24,16 @@ public class AuthenticationService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public MockUser signup(RegisterUserDto input) {
-        MockUser user = new MockUser()
-                .setUsername(input.getUsername())
-                .setPassword(passwordEncoder.encode(input.getPassword()));
+    public User signup(RegisterUserDto input) {
+        User user = new User();
+        user.setUsername(input.getUsername());
+        user.setPassword(passwordEncoder.encode(input.getPassword()));
+        user.setEmail("my@email.com");
 
         return userRepository.save(user);
     }
 
-    public MockUser authenticate(LoginUserDto input) {
+    public User authenticate(LoginUserDto input) {
         System.out.println("Authint = ");
         var auth = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
