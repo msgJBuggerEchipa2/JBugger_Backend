@@ -33,9 +33,22 @@ public class RoleController {
             @RequestHeader(name="Authorization") String token,
             @RequestBody RolePermissionPairDTO body
             ) throws ServiceOperationException {
+        // TO DO: validate user privileges
         var permission = permissionService.findByType(body.getPermissionType()).getValueInterceptError();
         var role = roleService.findByType(body.getRoleType()).getValueInterceptError();
         return roleService.addPermissionToRole(role, permission)
+                .toResponseEntity();
+    }
+
+    @RequestMapping(value = "/roles/permissions", method = RequestMethod.DELETE)
+    public ResponseEntity<Role> removePermissionToRole(
+            @RequestHeader(name="Authorization") String token,
+            @RequestBody RolePermissionPairDTO body
+    ) throws ServiceOperationException {
+        // TO DO: validate user privileges
+        var permission = permissionService.findByType(body.getPermissionType()).getValueInterceptError();
+        var role = roleService.findByType(body.getRoleType()).getValueInterceptError();
+        return roleService.removePermissionFromRole(role, permission)
                 .toResponseEntity();
     }
 
