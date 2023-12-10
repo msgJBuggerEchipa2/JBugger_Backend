@@ -61,9 +61,4 @@ public class AuthenticationController {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.UNAUTHORIZED);
     }
 
-    @ExceptionHandler(value = { RuntimeException.class })
-    protected ResponseEntity<Object> handleException(RuntimeException ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
 }

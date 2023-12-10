@@ -2,12 +2,10 @@ package com.msgsystems.jbugger.echipa2.backend.auth;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.msgsystems.jbugger.echipa2.backend.model.response.ErrorResponse;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -78,16 +76,28 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
 
             filterChain.doFilter(request, response);
-        } catch (Exception exception) {
+        }
+        catch (IllegalStateException illegalStateException){
+            logger.info("IllStateException:"+illegalStateException);
+            logger.info("IllStateException:"+illegalStateException.getCause());
+            if(illegalStateException.getCause() instanceof Exception) {
+                handlerExceptionResolver.resolveException(request, response, null,
+                        (Exception) illegalStateException.getCause());
+            }
+            else {
+                handlerExceptionResolver.resolveException(request, response, null, illegalStateException);
+            }
+        }
+        catch (Exception exception) {
             logger.info("Exception:"+exception);
-            var errorResponse = new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, exception.getMessage());
+            /*var errorResponse = new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, exception.getMessage());
             response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            response.getWriter().write(convertObjectToJson(errorResponse));
+            response.getWriter().write(convertObjectToJson(errorResponse));*/
 
             //throw exception;
 
             //v--- this doesn't work or idk how to make it work :(
-            //handlerExceptionResolver.resolveException(request, response, null, exception);
+            handlerExceptionResolver.resolveException(request, response, null, exception);
 
         }
     }

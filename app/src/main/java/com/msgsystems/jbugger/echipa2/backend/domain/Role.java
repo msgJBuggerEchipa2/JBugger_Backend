@@ -29,5 +29,7 @@ public class Role {
         return type;
     }
 
-
+    public List<Permission> getPermissions() {
+        return permissions;
+    }
 }
