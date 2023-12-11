@@ -1,5 +1,6 @@
 package com.msgsystems.jbugger.echipa2.backend.auth;
 
+import com.msgsystems.jbugger.echipa2.backend.domain.Permission;
 import com.msgsystems.jbugger.echipa2.backend.domain.User;
 import com.msgsystems.jbugger.echipa2.backend.repository.UserRepository;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -10,7 +11,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class AuthenticationService {
     private final UserRepository userRepository;
-
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
 
@@ -46,4 +46,9 @@ public class AuthenticationService {
         return userRepository.findByUsername(input.getUsername())
                 .orElseThrow();
     }
+
+    public void assertPermission(String token, Permission permission){
+
+    }
+
 }

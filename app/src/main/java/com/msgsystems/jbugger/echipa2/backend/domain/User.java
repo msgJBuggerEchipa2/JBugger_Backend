@@ -5,6 +5,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "users")
@@ -29,6 +31,9 @@ public class User implements UserDetails {
 
     @Column(name="status")
     private UserStatus status;
+
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private List<Role> roles;
 
     public User(){
         this.status = UserStatus.ACTIVE;
@@ -107,6 +112,21 @@ public class User implements UserDetails {
     }
 
     public void setStatus(UserStatus newStatus){ this.status = newStatus;}
+
+    public List<Role> getRoles(){
+        return roles;
+    }
+
+    public boolean hasRole(Role role){
+        return roles.stream().anyMatch(r-> Objects.equals(r.getType(), role.getType()));
+    }
+
+    public boolean hasPermission(Permission permission){
+        return roles.stream()
+                .anyMatch(r-> r.getPermissions().stream()
+                        .anyMatch(p-> Objects.equals(p.getType(), permission.getType())));
+    }
+
     public void deactivateUser() {
         this.status = UserStatus.INACTIVE;
     }
