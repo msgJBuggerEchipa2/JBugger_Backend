@@ -16,6 +16,13 @@ public class Permission {
     @Column(name = "description")
     private String description;
 
+    public Permission() {}
+
+    public Permission(String type, String description) {
+        this.type = type;
+        this.description = description;
+    }
+
     public String getType() {
         return type;
     }
