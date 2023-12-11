@@ -1,13 +1,19 @@
 package com.msgsystems.jbugger.echipa2.backend.controllers;
 
+import com.msgsystems.jbugger.echipa2.backend.auth.AuthenticationService;
 import com.msgsystems.jbugger.echipa2.backend.domain.User;
+import com.msgsystems.jbugger.echipa2.backend.model.UserRolePairDTO;
 import com.msgsystems.jbugger.echipa2.backend.repository.UserRepository;
+import com.msgsystems.jbugger.echipa2.backend.service.RoleService;
+import com.msgsystems.jbugger.echipa2.backend.service.ServiceOperationException;
+import com.msgsystems.jbugger.echipa2.backend.service.UserService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,7 +26,15 @@ import java.util.regex.Pattern;
 @RequestMapping("/api")
 public class UserController {
     @Autowired
-    UserRepository repository;
+    UserRepository userRepository;
+
+    @Autowired
+    AuthenticationService authService;
+    @Autowired
+    RoleService roleService;
+    @Autowired
+    UserService userService;
+
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     public String generateUsername(User user){
@@ -70,7 +84,7 @@ public class UserController {
     }
     public boolean isUnique(String username){
         // Check if username is unique by calling the repository method.
-        Optional<User> foundUser = repository.findByUsername(username);
+        Optional<User> foundUser = userRepository.findByUsername(username);
         return foundUser.isEmpty();
     }
     @PostMapping("/users/create")
@@ -79,7 +93,7 @@ public class UserController {
         if(validateUser(user)) {
             String generatedUsername = generateUsername(user);
             user.setUsername(generatedUsername);
-            repository.save(user);
+            userRepository.save(user);
         }
     }
 
@@ -87,7 +101,7 @@ public class UserController {
     @GetMapping("/users")
     public ResponseEntity<List<User>> findAll() {
         try {
-            var users = repository.findAll();
+            var users = userRepository.findAll();
             if (users.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
@@ -139,7 +153,7 @@ public class UserController {
                 String generatedUsername = generateUsername(user);
                 user.setUsername(generatedUsername);
                 // Save the user to the database
-                repository.save(user);
+                userRepository.save(user);
                 // Send welcome notification
                 sendWelcomeNotification(user);
                 return new ResponseEntity<>("User added successfully", HttpStatus.CREATED);
@@ -163,7 +177,7 @@ public class UserController {
     @PutMapping("/users/edit/{id}")
     public ResponseEntity<String> editUser(@PathVariable int id, @Valid @RequestBody User updatedUser) {
         try {
-            Optional<User> optionalUser = repository.findById((long)id);
+            Optional<User> optionalUser = userRepository.findById((long)id);
             if (optionalUser.isPresent()) {
                 User existingUser = optionalUser.get();
 
@@ -183,7 +197,7 @@ public class UserController {
                 // Perform validations
                 if (validateUser(existingUser)) {
                     // Save the updated user to the database
-                    repository.save(existingUser);
+                    userRepository.save(existingUser);
 
                     // Send USER_UPDATED notification
                     sendUserUpdatedNotification(existingUser);
@@ -211,7 +225,7 @@ public class UserController {
 
     @GetMapping("/printUsers")
     public ResponseEntity<List<User>> printUsers() {
-        List<User> users = repository.findAll();
+        List<User> users = userRepository.findAll();
         users.forEach(user -> {
             // Log or print the user data
             System.out.println(user.toString());
@@ -222,7 +236,7 @@ public class UserController {
     @DeleteMapping("/users/delete/{id}")
     public ResponseEntity<String> deleteUser(@PathVariable int id) {
         try {
-            Optional<User> optionalUser = repository.findById((long)id);
+            Optional<User> optionalUser = userRepository.findById((long)id);
 
             if (optionalUser.isPresent()) {
                 User userToDelete = optionalUser.get();
@@ -236,7 +250,7 @@ public class UserController {
                 userToDelete.deactivateUser();
 
 
-                repository.save(userToDelete);
+                userRepository.save(userToDelete);
 
                 // send notification USER_DELETED
                 sendUserDeletedNotification(userToDelete);
@@ -248,6 +262,18 @@ public class UserController {
         } catch (Exception e) {
             return new ResponseEntity<>("Error deleting user", HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+
+    @PutMapping("/users/roles")
+    private ResponseEntity<User> addRole(
+            Authentication auth,
+            @RequestBody UserRolePairDTO body
+    ) throws ServiceOperationException {
+        //authService.assertPermission(auth, PermissionTypes.PERMISSION_MANAGEMENT);
+        var user = userService.findByUsername(body.getUsername()).getValueInterceptError();
+        var role = roleService.findByType(body.getRoleType()).getValueInterceptError();
+        return userService.addRoleToUser(user, role).toResponseEntity();
     }
 
     private boolean hasUnfinishedTasks(User user) {

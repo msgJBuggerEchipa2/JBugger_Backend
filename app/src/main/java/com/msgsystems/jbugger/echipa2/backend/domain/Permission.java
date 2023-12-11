@@ -18,6 +18,10 @@ public class Permission {
 
     public Permission() {}
 
+    public Permission(String type) {
+        this.type = type;
+    }
+
     public Permission(String type, String description) {
         this.type = type;
         this.description = description;

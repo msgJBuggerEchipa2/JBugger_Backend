@@ -25,6 +25,10 @@ public class Role {
         this.type = type;
     }
 
+    public int getId() {
+        return id;
+    }
+
     public String getType() {
         return type;
     }
