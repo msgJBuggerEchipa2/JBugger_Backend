@@ -158,6 +158,64 @@ public class BugController {
         }
     }
 
+    @PostMapping("/bugs/editBug/{id}")
+    public ResponseEntity<String> editBug(@Valid @RequestBody Bug updatedBug ,
+                                                  @PathVariable int id) {
+
+        try{
+            Optional<Bug> optionalBug = bugRepository.findById((long)id);
+            if(optionalBug.isPresent()) {
+                Bug editedBug = optionalBug.get();
+                if(validateBug(updatedBug) && canUpdateBugStatus(editedBug.getStatus(), updatedBug.getStatus())) {
+                    editedBug.setTitle(updatedBug.getTitle());
+                    editedBug.setDescription(editedBug.getDescription());
+                    editedBug.setStatus(updatedBug.getStatus());
+                    editedBug.setVersion(updatedBug.getVersion());
+                    editedBug.setFixedVersion(updatedBug.getFixedVersion());
+                    editedBug.setTargetDate(updatedBug.getTargetDate());
+                    editedBug.setSeverity(updatedBug.getSeverity());
+                    bugRepository.save(editedBug);
+                    return new ResponseEntity<>("Bug updated successfully", HttpStatus.CREATED);
+                }
+                else {
+                    return new ResponseEntity<>("Invalid bug data.", HttpStatus.BAD_REQUEST);
+                }
+
+            }
+            else {
+                return new ResponseEntity<>("Bug doesn't exist", HttpStatus.BAD_REQUEST);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>("Bug doesn't exist", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping("/bugs/closeBug/{id}")
+    public ResponseEntity<String> closeBug(@PathVariable int id) {
+
+        try{
+            Optional<Bug> optionalBug = bugRepository.findById((long)id);
+            if(optionalBug.isPresent()) {
+                Bug editedBug = optionalBug.get();
+               if(canUpdateBugStatus(editedBug.getStatus(), "CLOSED")) {
+                   editedBug.setStatus("CLOSED");
+                   bugRepository.save(editedBug);
+                   return new ResponseEntity<>("Bug closed.", HttpStatus.CREATED);
+               }
+               else {
+                   return new ResponseEntity<>("Bug cannot be closed.", HttpStatus.BAD_REQUEST);
+               }
+            }
+            else {
+                return new ResponseEntity<>("Bug doesn't exist", HttpStatus.BAD_REQUEST);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>("Bug doesn't exist", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+
     @GetMapping("/bugs/printBugs")
     public ResponseEntity<List<Bug>> printBugs() {
         List<Bug> bugs = bugRepository.findAll();
