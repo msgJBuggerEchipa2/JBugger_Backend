@@ -6,8 +6,11 @@ import com.msgsystems.jbugger.echipa2.backend.repository.UserRepository;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
 
 @Service
 public class AuthenticationService {
@@ -34,18 +37,35 @@ public class AuthenticationService {
         return userRepository.save(user);
     }
 
+    private final HashMap<String, Integer> failedLoginAttempts = new HashMap<>();
+
     public User authenticate(LoginUserDto input) {
         System.out.println("Authint = ");
-        var auth = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        input.getUsername(),
-                        input.getPassword()
-                )
-        );
-        System.out.println("Auth result = "+auth.toString());
+        var username = input.getUsername();
+        var password = input.getPassword();
 
-        return userRepository.findByUsername(input.getUsername())
-                .orElseThrow();
+        var user = userRepository.findByUsername(username).orElseThrow();
+        if(!user.isEnabled())
+            throw new DeactivatedUserException();
+
+        try {
+            var auth = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(username, password)
+            );
+            System.out.println("Auth result = "+auth.toString());
+        }
+        catch (AuthenticationException e) {
+            failedLoginAttempts.put(
+                    username, failedLoginAttempts.getOrDefault(username, 0) + 1
+            );
+            if(failedLoginAttempts.get(username)>=5){
+                user.deactivateUser();
+                userRepository.save(user);
+                throw new DeactivatedUserException();
+            }
+            throw e;
+        }
+        return user;
     }
 
     public void assertPermission(Authentication auth, String permissionType) throws NotPermittedException {
