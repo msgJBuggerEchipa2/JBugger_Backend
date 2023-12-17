@@ -68,12 +68,21 @@ public class AuthenticationService {
         return user;
     }
 
-    public void assertPermission(Authentication auth, String permissionType) throws NotPermittedException {
+    /**
+     * @param auth authentication
+     * @param permissionType when permission type is null, we just want to check
+     *                       user's integrity. Otherwise, the permission is checked
+     *                       considering the user's current roles
+     */
+    public User assertPermission(Authentication auth, String permissionType) {
         var user = userRepository.findByUsername(auth.getName());
         if(user.isEmpty())
             throw new NullPointerException("assertPermission(): User not found");
+        if(permissionType==null)
+            return user.get();
         if(!user.get().hasPermission(new Permission(permissionType)))
             throw new NotPermittedException("User doesn't have the required permission to execute this action");
+        return user.get();
     }
 
 

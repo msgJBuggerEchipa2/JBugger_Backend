@@ -5,4 +5,5 @@ public class PermissionTypes {
     public static final String USER_MANAGEMENT = "USER_MANAGEMENT";
     public static final String BUG_MANAGEMENT = "BUG_MANAGEMENT";
     public static final String BUG_CLOSE = "BUG_CLOSE";
+    public static final String ADDRESSED_USER = null;
 }
