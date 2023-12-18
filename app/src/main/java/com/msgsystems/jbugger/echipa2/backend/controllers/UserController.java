@@ -273,12 +273,10 @@ public class UserController {
 
     @PutMapping("/users/{userId}/roles")
     private ResponseEntity<User> addRole(
-            Authentication auth,
-            Long userId,
-            @RequestBody Role roleBody
+            Authentication auth, @PathVariable Long userId, @RequestBody Role roleBody
     ) throws ServiceOperationException {
         authService.assertPermission(auth, PermissionTypes.USER_MANAGEMENT);
-        logger.info("here?");
+        logger.info("Getting user id = "+userId);
         var user = userService.findById(userId).getValueInterceptError();
         var role = roleService.findByType(roleBody.getType()).getValueInterceptError();
         return userService.addRoleToUser(user, role).toResponseEntity();
