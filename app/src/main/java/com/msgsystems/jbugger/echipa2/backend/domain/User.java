@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -34,6 +35,9 @@ public class User implements UserDetails {
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Role> roles;
+
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private List<Bug> createdBugs = new ArrayList<>();
 
     public User(){
         this.status = UserStatus.ACTIVE;
@@ -129,5 +133,10 @@ public class User implements UserDetails {
 
     public void deactivateUser() {
         this.status = UserStatus.INACTIVE;
+    }
+
+    @Override
+    public String toString() {
+        return this.getUsername();
     }
 }
