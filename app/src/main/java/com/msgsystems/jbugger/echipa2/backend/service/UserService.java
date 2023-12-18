@@ -14,6 +14,14 @@ public class UserService {
     @Autowired
     private RoleRepository roleRepository;
 
+    public ServiceOperationResult<User> findById(Long id){
+        var user = userRepository.findById(id);
+        if(user.isEmpty())
+            return ServiceOperationResult.NotFound((User)null)
+                    .setMessage("Could not find user with id " + id);
+        return ServiceOperationResult.Ok(user.get());
+    }
+
     public ServiceOperationResult<User> findByUsername(String username){
         var user = userRepository.findByUsername(username);
         if(user.isEmpty())

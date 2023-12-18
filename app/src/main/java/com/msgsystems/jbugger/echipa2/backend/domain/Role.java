@@ -9,7 +9,7 @@ import java.util.List;
 @Table(name = "roles")
 public class Role {
     @Id
-    @Column(name="id_permission")
+    @Column(name="id_role")
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 

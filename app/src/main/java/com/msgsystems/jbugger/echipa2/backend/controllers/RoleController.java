@@ -35,10 +35,10 @@ public class RoleController {
 
     @PutMapping(value = "/roles/permissions")
     public ResponseEntity<Role> addPermissionToRole(
-            @RequestHeader(name="Authorization") String token,
+            Authentication auth,
             @RequestBody RolePermissionPairDTO body
             ) throws ServiceOperationException {
-        // TO DO: validate user privileges
+        authService.assertPermission(auth, PermissionTypes.PERMISSION_MANAGEMENT);
         var permission = permissionService.findByType(body.getPermissionType()).getValueInterceptError();
         var role = roleService.findByType(body.getRoleType()).getValueInterceptError();
         return roleService.addPermissionToRole(role, permission)

@@ -10,6 +10,7 @@ import com.msgsystems.jbugger.echipa2.backend.domain.User;
 import com.msgsystems.jbugger.echipa2.backend.repository.BugRepository;
 import com.msgsystems.jbugger.echipa2.backend.utils.Graph;
 import jakarta.validation.Valid;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -33,7 +33,7 @@ public class BugController {
 
     Graph<String> bugStatesGraph;
 
-    private static final Logger logger = Logger.getLogger("BugController");
+    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(BugController.class);
 
     public BugController(){
         // State graph creation

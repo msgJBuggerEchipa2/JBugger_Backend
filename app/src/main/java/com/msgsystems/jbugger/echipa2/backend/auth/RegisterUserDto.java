@@ -7,6 +7,15 @@ public class RegisterUserDto {
 
     private String fullName;
 
+    public RegisterUserDto() {
+    }
+
+    public RegisterUserDto(String username, String password, String fullName) {
+        this.username = username;
+        this.password = password;
+        this.fullName = fullName;
+    }
+
     public String getUsername() {
         return username;
     }

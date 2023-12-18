@@ -14,7 +14,7 @@ import java.util.Objects;
 public class User implements UserDetails {
     @Id
     @Column(name="id_user")
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name="firstName")
@@ -25,7 +25,8 @@ public class User implements UserDetails {
     private String mobileNumber;
     @Column(name="email")
     private String email;
-    @Column(name="username")
+
+    @Column(name="username", unique = true)
     private String username = "";
     @Column(name="password")
     private String password;
@@ -34,12 +35,13 @@ public class User implements UserDetails {
     private UserStatus status;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private List<Role> roles;
+    private List<Role> roles=new ArrayList<>();
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Bug> createdBugs = new ArrayList<>();
 
     public User(){
+        this.id = 0L;
         this.status = UserStatus.ACTIVE;
     }
     public User(String _fName, String _lName, String _mobileNr, String _email){
@@ -111,8 +113,9 @@ public class User implements UserDetails {
     public void setPassword(String newPassword){
         this.password = newPassword;
     }
-    public void setUsername(String newUsername){
+    public User setUsername(String newUsername){
         this.username = newUsername;
+        return this;
     }
 
     public void setStatus(UserStatus newStatus){ this.status = newStatus;}
@@ -137,6 +140,17 @@ public class User implements UserDetails {
 
     @Override
     public String toString() {
-        return this.getUsername();
+        return "User{" +
+                "id=" + id +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", mobileNumber='" + mobileNumber + '\'' +
+                ", email='" + email + '\'' +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", status=" + status +
+                ", roles=" + roles +
+                ", createdBugs=" + createdBugs +
+                '}';
     }
 }

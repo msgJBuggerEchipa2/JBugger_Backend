@@ -1,12 +1,13 @@
 package com.msgsystems.jbugger.echipa2.backend.controllers;
 
 import com.msgsystems.jbugger.echipa2.backend.auth.AuthenticationService;
+import com.msgsystems.jbugger.echipa2.backend.domain.Role;
 import com.msgsystems.jbugger.echipa2.backend.domain.User;
-import com.msgsystems.jbugger.echipa2.backend.model.UserRolePairDTO;
 import com.msgsystems.jbugger.echipa2.backend.repository.UserRepository;
 import com.msgsystems.jbugger.echipa2.backend.service.RoleService;
 import com.msgsystems.jbugger.echipa2.backend.service.ServiceOperationException;
 import com.msgsystems.jbugger.echipa2.backend.service.UserService;
+import com.msgsystems.jbugger.echipa2.backend.utils.constants.PermissionTypes;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +28,6 @@ import java.util.regex.Pattern;
 public class UserController {
     @Autowired
     UserRepository userRepository;
-
     @Autowired
     AuthenticationService authService;
     @Autowired
@@ -88,7 +88,11 @@ public class UserController {
         return foundUser.isEmpty();
     }
     @PostMapping("/users/create")
-    public void createUser(@Valid @RequestBody User user){
+    public void createUser(
+            Authentication auth,
+            @Valid @RequestBody User user
+    ) {
+        authService.assertPermission(auth, PermissionTypes.USER_MANAGEMENT);
         // Validate given user and then generate username.
         if(validateUser(user)) {
             String generatedUsername = generateUsername(user);
@@ -99,7 +103,8 @@ public class UserController {
 
 
     @GetMapping("/users")
-    public ResponseEntity<List<User>> findAll() {
+    public ResponseEntity<List<User>> findAll(Authentication auth) {
+        authService.assertPermission(auth, PermissionTypes.USER_MANAGEMENT);
         try {
             var users = userRepository.findAll();
             if (users.isEmpty()) {
@@ -233,9 +238,12 @@ public class UserController {
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
-    @DeleteMapping("/users/delete/{id}")
-    public ResponseEntity<String> deleteUser(@PathVariable int id) {
+    @DeleteMapping("/users/{id}")
+    public ResponseEntity<String> deleteUser(
+            Authentication auth,
+            @PathVariable int id) {
         try {
+            authService.assertPermission(auth, PermissionTypes.USER_MANAGEMENT);
             Optional<User> optionalUser = userRepository.findById((long)id);
 
             if (optionalUser.isPresent()) {
@@ -249,9 +257,7 @@ public class UserController {
                 // set the status to INACTIVE
                 userToDelete.deactivateUser();
 
-
                 userRepository.save(userToDelete);
-
                 // send notification USER_DELETED
                 sendUserDeletedNotification(userToDelete);
 
@@ -265,14 +271,16 @@ public class UserController {
     }
 
 
-    @PutMapping("/users/roles")
+    @PutMapping("/users/{userId}/roles")
     private ResponseEntity<User> addRole(
             Authentication auth,
-            @RequestBody UserRolePairDTO body
+            Long userId,
+            @RequestBody Role roleBody
     ) throws ServiceOperationException {
-        //authService.assertPermission(auth, PermissionTypes.PERMISSION_MANAGEMENT);
-        var user = userService.findByUsername(body.getUsername()).getValueInterceptError();
-        var role = roleService.findByType(body.getRoleType()).getValueInterceptError();
+        authService.assertPermission(auth, PermissionTypes.USER_MANAGEMENT);
+        logger.info("here?");
+        var user = userService.findById(userId).getValueInterceptError();
+        var role = roleService.findByType(roleBody.getType()).getValueInterceptError();
         return userService.addRoleToUser(user, role).toResponseEntity();
     }
 
