@@ -33,7 +33,6 @@ public class AuthenticationService {
         user.setUsername(input.getUsername());
         user.setPassword(passwordEncoder.encode(input.getPassword()));
         user.setEmail("my@email.com");
-
         return userRepository.save(user);
     }
 
