@@ -10,17 +10,16 @@ import com.msgsystems.jbugger.echipa2.backend.domain.User;
 import com.msgsystems.jbugger.echipa2.backend.repository.BugRepository;
 import com.msgsystems.jbugger.echipa2.backend.utils.Graph;
 import jakarta.validation.Valid;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -34,7 +33,7 @@ public class BugController {
 
     Graph<String> bugStatesGraph;
 
-    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
+    private static final Logger logger = Logger.getLogger("BugController");
 
     public BugController(){
         // State graph creation
@@ -73,21 +72,27 @@ public class BugController {
         Pattern pattern_version = Pattern.compile("^[a-zA-Z0-9]+.[a-zA-Z0-9]+$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern_version.matcher(bug.getVersion());
 
-        if(bug.getDescription().length() < 250) // description validation
+        if(bug.getDescription().length() < 250) { // description validation
+            logger.info("Invalid description");
             return false;
+        }
 
-        if(!matcher.find()) // version validation
+        if(!matcher.find()) { // version validation
+            logger.info("Invalid version");
             return false;
+        }
 
         try {
             BugSeverity.valueOf(bug.getSeverity());
         } catch (IllegalArgumentException e) {
+            logger.info("Invalid severity");
             return false;
         }
 
         try {
             BugStatus.valueOf(bug.getStatus());
         } catch (IllegalArgumentException e) {
+            logger.info("Invalid status");
             return false;
         }
 
