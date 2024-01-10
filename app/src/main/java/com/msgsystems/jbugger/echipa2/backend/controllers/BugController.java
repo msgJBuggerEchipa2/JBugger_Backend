@@ -39,14 +39,13 @@ public class BugController {
         // State graph creation
         bugStatesGraph = new Graph<>();
 
-        bugStatesGraph.addNode("NEW");
+        bugStatesGraph.addNode("OPEN");
         bugStatesGraph.addNode("FIXED");
         bugStatesGraph.addNode("CLOSED");
         bugStatesGraph.addNode("IN_PROGRESS");
         bugStatesGraph.addNode("REJECTED");
         bugStatesGraph.addNode("INFO_NEEDED");
 
-        bugStatesGraph.addEdge(BugStatus.NEW.toString(), BugStatus.OPEN.toString());
 
          bugStatesGraph.addEdge(BugStatus.FIXED.toString(), BugStatus.OPEN.toString());
         bugStatesGraph.addEdge(BugStatus.FIXED.toString(), BugStatus.CLOSED.toString());

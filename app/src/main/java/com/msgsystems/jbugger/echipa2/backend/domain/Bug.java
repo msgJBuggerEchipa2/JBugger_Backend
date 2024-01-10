@@ -42,7 +42,7 @@ public class Bug {
     //TODO -> attachments
 
     public Bug(){
-        this.status = "NEW";
+        this.status = "OPEN";
     }
 
     public Long getId() {

@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class RoleService {
@@ -56,6 +57,17 @@ public class RoleService {
             return ServiceOperationResult.NoEffect(role)
                     .setMessage("The role already this permission");
         }
+
+        Optional<Permission> existingPermission = role.getPermissions().stream()
+                .filter(p -> p.getType().equals(permission.getType()))
+                .findFirst();
+
+        if (existingPermission.isPresent()) {
+            // Permission with the same type already exists, update or handle it as needed
+            return ServiceOperationResult.NoEffect(role)
+                    .setMessage("The role already has a permission with the same type");
+        }
+
         role.getPermissions().add(permission);
         roleRepository.save(role);
         return ServiceOperationResult.Ok(role);
