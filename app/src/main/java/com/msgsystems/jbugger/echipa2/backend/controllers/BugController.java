@@ -36,7 +36,6 @@ public class BugController {
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(BugController.class);
 
     public BugController(){
-        // State graph creation
         bugStatesGraph = new Graph<>();
 
         bugStatesGraph.addNode("OPEN");
@@ -109,18 +108,13 @@ public class BugController {
     @PostMapping("/bugs/add")
     public ResponseEntity<String> addBug(@Valid @RequestBody Bug bug) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        // TODO -> add assigned user and attachments
         if(authentication != null) {
             try {
                 if (validateBug(bug)) {
-                    // Set bug creator
                     bug.setCreatedBy((User)authentication.getPrincipal());
-                    // Save bug to repo
                     bugRepository.save(bug);
-                    //sendWelcomeNotification(user);
                     return new ResponseEntity<>("Bug added successfully", HttpStatus.CREATED);
                 } else {
-                    // Return a more detailed error message
                     return new ResponseEntity<>("Invalid bug data", HttpStatus.BAD_REQUEST);
                 }
             } catch (Exception e) {
@@ -224,7 +218,6 @@ public class BugController {
     public ResponseEntity<List<Bug>> printBugs() {
         List<Bug> bugs = bugRepository.findAll();
         bugs.forEach(bug -> {
-            // Log or print the user data
             System.out.println(bug.toString());
         });
         return new ResponseEntity<>(bugs, HttpStatus.OK);
