@@ -121,7 +121,7 @@ public class UserController {
         // Create pattern for each field to be validated by the matcher.
 
         Pattern pattern_name = Pattern.compile("^[a-zA-Z]+$", Pattern.CASE_INSENSITIVE);
-        Pattern pattern_mobile = Pattern.compile("^(\\+40|\\+49)[0-9]{8}$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern_mobile = Pattern.compile("^(\\+40|\\+49)[0-9]{9}$", Pattern.CASE_INSENSITIVE);
         Pattern pattern_email = Pattern.compile("^[a-zA-Z0-9._%+-]+@msggroup\\.com$");
 
 
